@@ -101,11 +101,11 @@ func (l *Logger) Banner(modules []Module, cfg Config) {
 	defer l.mu.Unlock()
 
 	lines := []string{
-		"  _                    _",
-		" | |    __ _ _ __   ___| |_ ___ _ __",
-		" | |   / _` | '_ \\ / __| __/ _ \\ '__|",
-		" | |__| (_| | | | | (__| ||  __/ |",
-		" |_____\\__,_|_| |_|\\___|\\__\\___|_|",
+		"  __    __    _   ______________",
+		" / /   / /   / | / / ____/ ____/",
+		"/ /   / /   /  |/ / __/ / /_    ",
+		"\\ \\  / /___/ /|  / /___/ __/    ",
+		" \\_\\/_____/_/ |_/_____/_/       ",
 	}
 
 	for _, line := range lines {
@@ -113,7 +113,7 @@ func (l *Logger) Banner(modules []Module, cfg Config) {
 	}
 
 	fmt.Fprintln(l.out, l.paint("90",
-		"  Lantern - Modular Network Service Framework (maybe one day will be like Responder ;-P)"))
+		"  LANTERN  /  modular network services"))
 	if cfg.Interface != "" {
 		fmt.Fprintf(l.out, "  Listen target: %s (%s)\n", cfg.Interface, cfg.InterfaceAddress)
 	}
