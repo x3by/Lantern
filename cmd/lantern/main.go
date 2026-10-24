@@ -10,6 +10,7 @@ import (
 
 	"lantern/internal/core"
 	"lantern/internal/modules/llmnr"
+	"lantern/internal/modules/mssql"
 	"lantern/internal/modules/smb"
 )
 
@@ -25,6 +26,10 @@ func main() {
 	}
 
 	if err := app.Register(smb.New(app.Printer())); err != nil {
+		fmt.Fprintf(os.Stderr, "lantern: %v\n", err)
+		os.Exit(1)
+	}
+	if err := app.Register(mssql.New(app.Printer())); err != nil {
 		fmt.Fprintf(os.Stderr, "lantern: %v\n", err)
 		os.Exit(1)
 	}
@@ -50,6 +55,9 @@ func main() {
 			m.Logger = app.Printer()
 		}
 		if m, ok := module.(*llmnr.Module); ok {
+			m.Logger = app.Printer()
+		}
+		if m, ok := module.(*mssql.Module); ok {
 			m.Logger = app.Printer()
 		}
 	}

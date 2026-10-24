@@ -420,9 +420,10 @@ func (m *Module) logAuthIdentity(protocol, client, workstation, username, hash s
 	if m.Logger == nil {
 		return
 	}
-	m.Logger.PrintHighlighted(core.Warning, "",
-		"[SMB] %s Client     : %s\n[SMB] %s Hostname  : %s\n[SMB] %s Username  : %s\n[SMB] %s Hash      : %s",
-		protocol, client, protocol, workstation, protocol, username, protocol, hash)
+	m.Logger.Loot(
+		fmt.Sprintf("[SMB] %s loot from %s", protocol, client),
+		"[SMB] %s Hostname  : %s\n[SMB] %s Username  : %s\n[SMB] %s Hash      : %s",
+		protocol, workstation, protocol, username, protocol, hash)
 }
 
 // formatNTLMv2Hash returns the standard John/hashcat NetNTLMv2 representation

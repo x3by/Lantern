@@ -63,7 +63,7 @@ func (l *Logger) Print(level Level, service, format string, args ...any) {
 	}{
 		Info:     {"[*]", "36"},
 		Success:  {"[+]", "32;1"},
-		Warning:  {"[!]", "33;1"},
+		Warning:  {"[!]", "33"},
 		Error:    {"[-]", "31;1"},
 		Protocol: {"[>]", "35;1"},
 	}
@@ -88,30 +88,12 @@ func (l *Logger) Print(level Level, service, format string, args ...any) {
 	fmt.Fprintf(l.out, "%s %s\n", prefix, message)
 }
 
-// PrintHighlighted writes a multiline message with the selected level's color.
-func (l *Logger) PrintHighlighted(level Level, service, format string, args ...any) {
-	styles := map[Level]struct {
-		label string
-		code  string
-	}{
-		Info: {"[*]", "36"}, Success: {"[+]", "32;1"},
-		Warning: {"[!]", "33;1"}, Error: {"[-]", "31;1"},
-		Protocol: {"[>]", "35;1"},
-	}
-	style, ok := styles[level]
-	if !ok {
-		style = styles[Info]
-	}
-
-	message := fmt.Sprintf(format, args...)
-	prefix := style.label
-	if service != "" {
-		message = "[" + strings.ToUpper(service) + "] " + message
-	}
-
+// Loot writes a highlighted heading followed by its detail on the next line.
+func (l *Logger) Loot(prepend, format string, args ...any) {
+	data := fmt.Sprintf(format, args...)
 	l.mu.Lock()
 	defer l.mu.Unlock()
-	fmt.Fprintln(l.out, l.paint(style.code, prefix+" "+message))
+	fmt.Fprintf(l.out, "%s\n%s\n", l.paint("33;1", prepend), l.paint("33;1", data))
 }
 
 func (l *Logger) Banner(modules []Module, cfg Config) {
@@ -131,13 +113,13 @@ func (l *Logger) Banner(modules []Module, cfg Config) {
 	}
 
 	fmt.Fprintln(l.out, l.paint("90",
-		"  Lantern - Modular Network Service Framework"))
+		"  Lantern - Modular Network Service Framework (maybe one day will be like Responder ;-P)"))
 	if cfg.Interface != "" {
 		fmt.Fprintf(l.out, "  Listen target: %s (%s)\n", cfg.Interface, cfg.InterfaceAddress)
 	}
 	fmt.Fprintln(l.out)
 
-	fmt.Fprintf(l.out, "%-12s %-20s %s\n",
+	fmt.Fprintf(l.out, "%-12s %-12s %s\n",
 		"SERVICE", "LISTENER", "POISONER")
 	fmt.Fprintln(l.out, strings.Repeat("-", 49))
 
