@@ -1,6 +1,31 @@
 # Lantern
 
-Lantern is a small, modular network service framework written in Go. It currently includes LLMNR, SMB, and MSSQL listeners.
+Lantern is a small, modular network service framework written in Go. It is a
+Responder-style credential-capture toolkit: each module runs a rogue service
+listener and/or a name-service poisoner.
+
+## Modules
+
+| Module | Port | Listener | Poisoner | Captures |
+| ------ | ---- | -------- | -------- | -------- |
+| LLMNR  | UDP 5355 | ✓ | — | Answers allow-listed name queries |
+| NBT-NS | UDP 137  | — | ✓ | Poisons NetBIOS name queries with Lantern's IP |
+| SMB    | TCP 445  | ✓ | — | NetNTLMv1/v2 (NTLMSSP) |
+| MSSQL  | TCP 1433 | ✓ | — | SQL / integrated login (TDS, incl. TLS) |
+| HTTP   | TCP 80   | ✓ | — | NetNTLM (NTLM/Negotiate), HTTP Basic, serves WPAD |
+| LDAP   | TCP 389  | ✓ | — | Simple-bind cleartext, NTLM/GSS-SPNEGO SASL bind |
+| FTP    | TCP 21   | ✓ | — | Cleartext USER/PASS |
+| SMTP   | TCP 25   | ✓ | — | AUTH PLAIN / AUTH LOGIN cleartext |
+| POP3   | TCP 110  | ✓ | — | USER/PASS, AUTH PLAIN / LOGIN cleartext |
+| IMAP   | TCP 143  | ✓ | — | LOGIN, AUTHENTICATE PLAIN / LOGIN cleartext |
+
+Shared NTLMSSP handling (Type 2 challenge generation and Type 3 parsing into a
+hashcat/john-ready NetNTLM line) lives in `internal/ntlm`. The poisoner and the
+HTTP WPAD response advertise the IPv4 address selected with `-i`, or an
+auto-detected non-loopback address when none is given.
+
+Most services bind privileged ports, so run Lantern as root (or grant the
+`cap_net_bind_service` capability).
 
 ## Requirements
 
